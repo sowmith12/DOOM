@@ -1,0 +1,3 @@
+# Keep Unix line endings (LF): the Makefiles and scripts run in WSL/Linux
+* text=auto eol=lf
+*.png binary

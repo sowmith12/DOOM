@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 830" width="1500" height="830" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">
+  <title>5-stage RV32IM pipeline datapath</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222"/></marker>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d9730d"/></marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c62828"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e7d32"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1565c0"/></marker>
+    <style>
+      .blk  { fill: #eef3fb; stroke: #34495e; stroke-width: 1.5; }
+      .mem  { fill: #e8f5e9; stroke: #2e7d32; stroke-width: 1.5; }
+      .ctl  { fill: #fdecea; stroke: #c62828; stroke-width: 1.5; }
+      .reg  { fill: #ffd966; stroke: #7f6000; stroke-width: 1.5; }
+      .mux  { fill: #ffffff; stroke: #34495e; stroke-width: 1.5; }
+      .w    { fill: none; stroke: #222; stroke-width: 1.5; }
+      .wf   { fill: none; stroke: #d9730d; stroke-width: 1.6; stroke-dasharray: 6 3; }
+      .wr   { fill: none; stroke: #c62828; stroke-width: 1.6; }
+      .wg   { fill: none; stroke: #2e7d32; stroke-width: 1.8; }
+      .wb   { fill: none; stroke: #1565c0; stroke-width: 1.8; }
+      .t    { fill: #222; }
+      .tb   { fill: #222; font-weight: 600; }
+      .ts   { fill: #444; font-size: 10.5px; }
+      .stage{ fill: #34495e; font-size: 20px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="830" fill="#ffffff"/>
+  <text x="20" y="28" font-size="18" font-weight="700" class="t">Our 5-stage pipelined RV32IM core: datapath (rtl/core/core.sv)</text>
+
+  <!-- stage names -->
+  <text x="110" y="70" class="stage">IF</text>
+  <text x="375" y="70" class="stage">ID</text>
+  <text x="730" y="70" class="stage">EX</text>
+  <text x="1055" y="70" class="stage">MEM</text>
+  <text x="1300" y="70" class="stage">WB</text>
+
+  <!-- pipeline registers -->
+  <rect x="250" y="85" width="18" height="610" class="reg"/>
+  <text transform="translate(263,690) rotate(-90)" class="tb">IF / ID</text>
+  <rect x="520" y="85" width="18" height="610" class="reg"/>
+  <text transform="translate(533,690) rotate(-90)" class="tb">ID / EX</text>
+  <rect x="960" y="85" width="18" height="610" class="reg"/>
+  <text transform="translate(973,690) rotate(-90)" class="tb">EX / MEM</text>
+  <rect x="1190" y="85" width="18" height="610" class="reg"/>
+  <text transform="translate(1203,690) rotate(-90)" class="tb">MEM / WB</text>
+
+  <!-- ============================ IF ============================ -->
+  <polygon points="30,170 58,185 58,255 30,270" class="mux"/>
+  <text x="33" y="224" class="ts">mux</text>
+  <rect x="90" y="195" width="60" height="50" class="blk"/>
+  <text x="108" y="225" class="tb">PC</text>
+  <path d="M58,220 H90" class="w" marker-end="url(#a)"/>
+  <text x="62" y="212" class="ts">pc_next</text>
+  <!-- pc -> IF/ID -->
+  <path d="M150,220 H250" class="w" marker-end="url(#a)"/>
+  <text x="200" y="213" class="ts">pc</text>
+  <!-- +4 -->
+  <rect x="160" y="280" width="50" height="36" class="blk"/>
+  <text x="174" y="303" class="tb">+4</text>
+  <path d="M185,220 V280" class="w" marker-end="url(#a)"/>
+  <path d="M185,316 V338 H16 V220 H30" class="w" marker-end="url(#a)"/>
+  <text x="40" y="333" class="ts">pc + 4 (normal)</text>
+  <!-- hold input -->
+  <path d="M120,245 V362 H22 V250 H30" class="w" marker-end="url(#a)"/>
+  <text x="40" y="376" class="ts">pc (first fetch after reset)</text>
+  <!-- imem -->
+  <rect x="80" y="405" width="160" height="92" class="mem"/>
+  <text x="92" y="425" class="tb">Instruction port</text>
+  <text x="92" y="442" class="ts">(BRAM now, I-cache later)</text>
+  <text x="92" y="460" class="ts">addr = pc_next, sent 1 cycle</text>
+  <text x="92" y="473" class="ts">early; instr arrives in IF;</text>
+  <text x="92" y="486" class="ts">busy = 1 → whole pipe stalls</text>
+  <path d="M74,220 V425 H80" class="wg" marker-end="url(#ag)"/>
+  <path d="M240,450 H250" class="w" marker-end="url(#a)"/>
+  <text x="180" y="515" class="ts">instr →</text>
+
+  <!-- ============================ ID ============================ -->
+  <rect x="285" y="385" width="100" height="110" class="blk"/>
+  <text x="300" y="408" class="tb">Decoder</text>
+  <text x="300" y="426" class="ts">opcode → ctrl</text>
+  <text x="300" y="441" class="ts">illegal? ecall?</text>
+  <rect x="295" y="452" width="80" height="32" class="blk"/>
+  <text x="305" y="472" class="ts">imm_gen</text>
+  <path d="M268,450 H285" class="w" marker-end="url(#a)"/>
+  <!-- pc passes -->
+  <path d="M268,220 H520" class="w" marker-end="url(#a)"/>
+  <text x="300" y="213" class="ts">pc, instr</text>
+  <!-- regfile -->
+  <rect x="405" y="250" width="100" height="120" class="blk"/>
+  <text x="418" y="272" class="tb">Register</text>
+  <text x="418" y="288" class="tb">file x0-x31</text>
+  <text x="412" y="306" class="ts">2 read ports</text>
+  <text x="412" y="320" class="ts">1 write port (WB)</text>
+  <text x="412" y="334" class="ts">write-through</text>
+  <path d="M385,405 H395 V292 H405" class="w" marker-end="url(#a)"/>
+  <path d="M385,418 H399 V352 H405" class="w" marker-end="url(#a)"/>
+  <text x="392" y="385" class="ts" transform="rotate(-90 392 385)">rs1, rs2</text>
+  <path d="M505,290 H520" class="w" marker-end="url(#a)"/>
+  <path d="M505,350 H520" class="w" marker-end="url(#a)"/>
+  <text x="506" y="283" class="ts">rs1</text>
+  <text x="506" y="343" class="ts">rs2</text>
+  <path d="M385,470 H520" class="w" marker-end="url(#a)"/>
+  <text x="440" y="463" class="ts">ctrl, imm</text>
+  <!-- hazard unit -->
+  <rect x="285" y="560" width="220" height="62" class="ctl"/>
+  <text x="297" y="580" class="tb">Hazard unit</text>
+  <text x="297" y="597" class="ts">load-use: hold IF+ID 1 cycle, bubble → EX</text>
+  <text x="297" y="611" class="ts">picks forwarding source for EX operands</text>
+
+  <!-- ============================ EX ============================ -->
+  <!-- forward mux A: inputs 272 reg, 290 mem, 308 wb -->
+  <polygon points="560,258 584,270 584,312 560,324" class="mux"/>
+  <polygon points="560,330 584,342 584,384 560,396" class="mux"/>
+  <text x="556" y="252" class="ts">fwd A</text>
+  <text x="556" y="410" class="ts">fwd B</text>
+  <path d="M538,290 H546 V272 H560" class="w" marker-end="url(#a)"/>
+  <path d="M538,350 H546 V342 H560" class="w" marker-end="url(#a)"/>
+  <!-- srcA / srcB muxes -->
+  <polygon points="612,250 636,262 636,318 612,330" class="mux"/>
+  <polygon points="612,335 636,347 636,393 612,405" class="mux"/>
+  <path d="M584,291 H612" class="w" marker-end="url(#a)"/>
+  <path d="M584,363 H612" class="w" marker-end="url(#a)"/>
+  <path d="M538,220 H602 V262 H612" class="w" marker-end="url(#a)"/>
+  <text x="570" y="213" class="ts">pc (auipc)</text>
+  <text x="600" y="322" class="ts">0</text>
+  <path d="M538,470 H604 V395 H612" class="w" marker-end="url(#a)"/>
+  <text x="560" y="483" class="ts">imm</text>
+  <!-- ALU -->
+  <polygon points="670,250 732,278 732,362 670,390 670,332 686,320 670,308" class="blk"/>
+  <text x="694" y="324" class="tb">ALU</text>
+  <path d="M636,290 H670" class="w" marker-end="url(#a)"/>
+  <path d="M636,370 H670" class="w" marker-end="url(#a)"/>
+  <!-- result mux: alu 290, pc+4 310, csr 330, muldiv 350 -->
+  <polygon points="895,265 921,279 921,361 895,375" class="mux"/>
+  <text x="880" y="258" class="ts">result mux</text>
+  <path d="M732,320 H760 V290 H895" class="w" marker-end="url(#a)"/>
+  <text x="800" y="283" class="ts">alu_y</text>
+  <text x="838" y="307" class="ts">pc+4 (jal/jalr)</text>
+  <path d="M921,320 H960" class="w" marker-end="url(#a)"/>
+  <text x="924" y="312" class="ts">result</text>
+  <!-- branch / target -->
+  <rect x="655" y="420" width="95" height="36" class="blk"/>
+  <text x="663" y="436" class="tb">Branch cmp</text>
+  <text x="663" y="450" class="ts">beq bne blt bge…</text>
+  <rect x="655" y="466" width="95" height="36" class="blk"/>
+  <text x="663" y="482" class="tb">Target</text>
+  <text x="663" y="496" class="ts">pc+imm, rs1+imm</text>
+  <path d="M594,291 V430 H655" class="w" marker-end="url(#a)"/>
+  <path d="M599,363 V445 H655" class="w" marker-end="url(#a)"/>
+  <!-- rs1/rs2 forwarded bus to M / CSR / store -->
+  <path d="M594,410 H764 V552 H772" class="w" marker-end="url(#a)"/>
+  <path d="M764,423 H772" class="w" marker-end="url(#a)"/>
+  <path d="M764,486 H772" class="w" marker-end="url(#a)"/>
+  <text x="640" y="406" class="ts">rs1_fwd / rs2_fwd</text>
+  <!-- muldiv -->
+  <rect x="772" y="403" width="95" height="50" class="blk"/>
+  <text x="780" y="423" class="tb">Mul / Div</text>
+  <text x="780" y="437" class="ts">mul: 1 cycle</text>
+  <text x="780" y="448" class="ts">div: 34 cycles</text>
+  <path d="M867,425 H880 V350 H895" class="w" marker-end="url(#a)"/>
+  <!-- CSR -->
+  <rect x="772" y="460" width="95" height="60" class="blk"/>
+  <text x="780" y="478" class="tb">CSR file</text>
+  <text x="780" y="493" class="ts">mtvec, mepc,</text>
+  <text x="780" y="506" class="ts">mcause, mcycle…</text>
+  <path d="M867,480 H886 V330 H895" class="w" marker-end="url(#a)"/>
+  <!-- store align -->
+  <rect x="772" y="528" width="95" height="48" class="blk"/>
+  <text x="780" y="543" class="tb">Store align</text>
+  <text x="780" y="558" class="ts">wdata +</text>
+  <text x="780" y="570" class="ts">byte strobes</text>
+  <!-- exceptions & redirect -->
+  <rect x="560" y="705" width="390" height="56" class="ctl"/>
+  <text x="572" y="724" class="tb">Exceptions &amp; redirect (the commit point)</text>
+  <text x="572" y="740" class="ts">trap → mtvec · mret → mepc · taken branch / jal / jalr → target · fence.i → pc+4</text>
+  <text x="572" y="753" class="ts">redirect flushes IF/ID and ID/EX (2-cycle penalty)</text>
+  <path d="M702,456 V705" class="wr" marker-end="url(#ar)"/>
+  <path d="M740,502 V705" class="wr" marker-end="url(#ar)"/>
+  <path d="M820,520 V705" class="wr" marker-end="url(#ar)"/>
+  <path d="M560,745 H10 V190 H30" class="wr" marker-end="url(#ar)"/>
+  <text x="120" y="740" class="ts" fill="#c62828">redirect_pc  (back to the PC mux)</text>
+
+  <!-- ============================ MEM ============================ -->
+  <rect x="992" y="520" width="170" height="112" class="mem"/>
+  <text x="1004" y="540" class="tb">Data port</text>
+  <text x="1004" y="556" class="ts">(BRAM now, D-cache later)</text>
+  <text x="1004" y="572" class="ts">addr/wdata/wstrb sent from EX;</text>
+  <text x="1004" y="586" class="ts">load data arrives in MEM;</text>
+  <text x="1004" y="600" class="ts">busy = 1 → whole pipe stalls</text>
+  <path d="M750,320 V598 H880 V608 H992" class="wg" marker-end="url(#ag)"/>
+  <path d="M867,552 H992" class="wg" marker-end="url(#ag)"/>
+  <text x="880" y="546" class="ts" fill="#2e7d32">wdata, wstrb</text>
+  <text x="880" y="622" class="ts" fill="#2e7d32">address</text>
+  <!-- load align -->
+  <rect x="1000" y="410" width="150" height="50" class="blk"/>
+  <text x="1010" y="430" class="tb">Load align</text>
+  <text x="1010" y="446" class="ts">pick byte/half, sign-extend</text>
+  <path d="M1076,520 V460" class="w" marker-end="url(#a)"/>
+  <path d="M978,435 H1000" class="w" marker-end="url(#a)"/>
+  <text x="984" y="428" class="ts">size</text>
+  <!-- wb select mux -->
+  <polygon points="1160,300 1180,310 1180,360 1160,370" class="mux"/>
+  <path d="M978,320 H1160" class="w" marker-end="url(#a)"/>
+  <path d="M1150,435 H1154 V352 H1160" class="w" marker-end="url(#a)"/>
+  <text x="1080" y="313" class="ts">result</text>
+  <text x="1100" y="390" class="ts">load value</text>
+  <path d="M1180,335 H1190" class="w" marker-end="url(#a)"/>
+
+  <!-- ============================ WB ============================ -->
+  <rect x="1250" y="305" width="150" height="56" class="blk"/>
+  <text x="1262" y="325" class="tb">Write back</text>
+  <text x="1262" y="341" class="ts">rd ← wb_data</text>
+  <path d="M1208,335 H1250" class="w" marker-end="url(#a)"/>
+  <rect x="1250" y="400" width="150" height="62" class="blk"/>
+  <text x="1262" y="420" class="tb">Retire port</text>
+  <text x="1262" y="436" class="ts">pc, instr, rd, value</text>
+  <text x="1262" y="450" class="ts">(trace vs Spike)</text>
+  <path d="M1225,335 V430 H1250" class="w" marker-end="url(#a)"/>
+  <!-- writeback to regfile -->
+  <path d="M1325,305 V100 H455 V250" class="wb" marker-end="url(#ab)"/>
+  <text x="700" y="94" class="ts" fill="#1565c0">write port: rd, wb_data (from WB back to the register file)</text>
+
+  <!-- ============================ forwarding ============================ -->
+  <path d="M986,320 V662 H551 V290 H560" class="wf" marker-end="url(#ao)"/>
+  <path d="M551,360 H560" class="wf" marker-end="url(#ao)"/>
+  <path d="M1216,335 V682 H555 V308 H560" class="wf" marker-end="url(#ao)"/>
+  <path d="M555,378 H560" class="wf" marker-end="url(#ao)"/>
+  <text x="700" y="656" class="ts" fill="#d9730d">forward from EX/MEM (1 instruction ahead)</text>
+  <text x="700" y="696" class="ts" fill="#d9730d">forward from MEM/WB (2 instructions ahead)</text>
+
+  <!-- ============================ footer / legend ============================ -->
+  <text x="20" y="790" class="tb">Global stall = imem_busy | dmem_busy | div_busy | fencei_busy  →  every pipeline register holds its value.</text>
+  <text x="20" y="810" class="t">Load-use: stall IF + ID one cycle and send a bubble into EX. Taken branch / jump / trap: throw away IF and ID (2 cycles).</text>
+  <g transform="translate(1180,760)">
+    <line x1="0" y1="0" x2="30" y2="0" class="w"/><text x="36" y="4" class="ts">data</text>
+    <line x1="80" y1="0" x2="110" y2="0" class="wf"/><text x="116" y="4" class="ts">forwarding</text>
+    <line x1="190" y1="0" x2="220" y2="0" class="wr"/><text x="226" y="4" class="ts">control</text>
+    <line x1="0" y1="22" x2="30" y2="22" class="wg"/><text x="36" y="26" class="ts">memory request</text>
+    <line x1="130" y1="22" x2="160" y2="22" class="wb"/><text x="166" y="26" class="ts">register write</text>
+  </g>
+</svg>

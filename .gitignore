@@ -1,0 +1,13 @@
+# everything generated (simulator builds, compiled tests, results, waves)
+build/
+# downloaded dependencies (make deps)
+third_party/
+__pycache__/
+*.pyc
+*.fst
+*.vcd
+results.xml
+# Vivado
+*.jou
+*.log
+.Xil/
